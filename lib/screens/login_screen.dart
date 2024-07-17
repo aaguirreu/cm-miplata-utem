@@ -1,5 +1,7 @@
+// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -22,6 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
+        if (_currentUser != null) {
+          _navigateToHomeScreen();
+        }
       });
     });
     _googleSignIn.signInSilently();
@@ -39,12 +44,27 @@ class _LoginScreenState extends State<LoginScreen> {
     await _googleSignIn.disconnect();
   }
 
+  void _navigateToHomeScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          totalBalance: 1000.00, // Example balance
+          recentTransactions: [
+            {'title': 'Groceries', 'amount': 50.75, 'date': '2024-07-15', 'type': 'expense'},
+            {'title': 'Salary', 'amount': 1500.00, 'date': '2024-07-14', 'type': 'income'},
+            {'title': 'Electricity Bill', 'amount': 75.25, 'date': '2024-07-13', 'type': 'expense'},
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount? user = _currentUser;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Google Sign-In Example'),
+        title: Text('Iniciar sesión'),
         actions: <Widget>[
           user != null
               ? IconButton(
@@ -81,3 +101,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
