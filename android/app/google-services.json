@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "782417090127",
+    "project_id": "cm-miplata-utem",
+    "storage_bucket": "cm-miplata-utem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782417090127:android:607edc5643e9dc0688fc3a",
+        "android_client_info": {
+          "package_name": "cl.utem.cm.miplata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782417090127-jh3cjcoe01d5vcs6jbs8og987a2o04ts.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cl.utem.cm.miplata",
+            "certificate_hash": "88efd6b291c1a58750be34edf79b2f184a5dacec"
+          }
+        },
+        {
+          "client_id": "782417090127-k6m05n1qaoq81862h0bof3t1lm9p5ff7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH9p6_xpBEInvuNMHutdZYRa8dvLIFDy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782417090127-k6m05n1qaoq81862h0bof3t1lm9p5ff7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
