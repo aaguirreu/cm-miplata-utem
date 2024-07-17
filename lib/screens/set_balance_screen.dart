@@ -55,3 +55,4 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
     );
   }
 }
+

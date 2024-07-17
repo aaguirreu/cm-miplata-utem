@@ -47,14 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToHomeScreen() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          totalBalance: 1000.00, // Example balance
-          recentTransactions: [
-            {'title': 'Groceries', 'amount': 50.75, 'date': '2024-07-15', 'type': 'expense'},
-            {'title': 'Salary', 'amount': 1500.00, 'date': '2024-07-14', 'type': 'income'},
-            {'title': 'Electricity Bill', 'amount': 75.25, 'date': '2024-07-13', 'type': 'expense'},
-          ],
-        ),
+        builder: (context) => HomeScreen(),
       ),
     );
   }
@@ -64,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     GoogleSignInAccount? user = _currentUser;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar sesión'),
+        title: Text('Google Sign-In Example'),
         actions: <Widget>[
           user != null
               ? IconButton(
@@ -101,4 +94,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
 

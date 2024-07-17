@@ -3,28 +3,19 @@ import 'package:flutter/material.dart';
 import 'add_transaction_screen.dart';
 import 'category_screen.dart';
 import 'set_balance_screen.dart';
+import 'category_chart_screen.dart';
+import 'all_transactions_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final double totalBalance;
-  final List<Map<String, dynamic>> recentTransactions;
-
-  HomeScreen({required this.totalBalance, required this.recentTransactions});
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late double totalBalance;
-  late List<Map<String, dynamic>> recentTransactions;
+  double totalBalance = 0.0;
+  List<Map<String, dynamic>> recentTransactions = [];
   List<String> categories = ['Food', 'Transport', 'Entertainment'];
-
-  @override
-  void initState() {
-    super.initState();
-    totalBalance = widget.totalBalance;
-    recentTransactions = widget.recentTransactions;
-  }
+  bool isInitialBalanceSet = false;
 
   void _addTransaction(String title, double amount, String type, String category) {
     setState(() {
@@ -44,6 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _updateTransaction(int index, Map<String, dynamic> updatedTransaction) {
+    setState(() {
+      recentTransactions[index] = updatedTransaction;
+      if (updatedTransaction['type'] == 'income') {
+        totalBalance += updatedTransaction['amount'];
+      } else {
+        totalBalance -= updatedTransaction['amount'];
+      }
+    });
+  }
+
+  void _deleteTransaction(int index) {
+    setState(() {
+      if (recentTransactions[index]['type'] == 'income') {
+        totalBalance -= recentTransactions[index]['amount'];
+      } else {
+        totalBalance += recentTransactions[index]['amount'];
+      }
+      recentTransactions.removeAt(index);
+    });
+  }
+
   void _updateCategories(List<String> updatedCategories) {
     setState(() {
       categories = updatedCategories;
@@ -53,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _setInitialBalance(double balance) {
     setState(() {
       totalBalance = balance;
+      isInitialBalanceSet = true;
     });
   }
 
@@ -72,16 +86,17 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SetBalanceScreen(onSetBalance: _setInitialBalance),
-                  ),
-                );
-              },
-              child: Text('Set Initial Balance'),
-            ),
+            if (!isInitialBalanceSet)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SetBalanceScreen(onSetBalance: _setInitialBalance),
+                    ),
+                  );
+                },
+                child: Text('Set Initial Balance'),
+              ),
             SizedBox(height: 20),
             Text(
               'Recent Transactions',
@@ -89,22 +104,44 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                itemCount: recentTransactions.length,
-                itemBuilder: (context, index) {
-                  final transaction = recentTransactions[index];
-                  return ListTile(
-                    title: Text(transaction['title']),
-                    subtitle: Text('${transaction['date']} - ${transaction['category'] ?? ''}'),
-                    trailing: Text(
-                      '\$${transaction['amount'].toStringAsFixed(2)}',
-                      style: TextStyle(
-                          color: transaction['type'] == 'income'
-                              ? Colors.green
-                              : Colors.red),
+              child: recentTransactions.isEmpty
+                  ? Center(child: Text('No recent transactions'))
+                  : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: recentTransactions.length < 4 ? recentTransactions.length : 4,
+                      itemBuilder: (context, index) {
+                        final transaction = recentTransactions[index];
+                        return ListTile(
+                          title: Text(transaction['title']),
+                          subtitle: Text('${transaction['date']} - ${transaction['category'] ?? ''}'),
+                          trailing: Text(
+                            '\$${transaction['amount'].toStringAsFixed(2)}',
+                            style: TextStyle(
+                                color: transaction['type'] == 'income'
+                                    ? Colors.green
+                                    : Colors.red),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AllTransactionsScreen(
+                            transactions: recentTransactions,
+                            onUpdateTransaction: _updateTransaction,
+                            onDeleteTransaction: _deleteTransaction,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('View All Transactions'),
+                  ),
+                ],
               ),
             ),
           ],
@@ -139,11 +176,28 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Icon(Icons.category),
           ),
+          SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CategoryChartScreen(recentTransactions: recentTransactions),
+                ),
+              );
+            },
+            child: Icon(Icons.pie_chart),
+          ),
         ],
       ),
     );
   }
 }
+
+
+
+
+
+
 
 
 

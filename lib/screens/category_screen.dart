@@ -1,6 +1,5 @@
 // category_screen.dart
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class CategoryScreen extends StatefulWidget {
   final List<String> categories;
@@ -16,27 +15,11 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final TextEditingController _categoryController = TextEditingController();
   late List<String> categories;
-  late Map<String, double> categoryTotals;
 
   @override
   void initState() {
     super.initState();
     categories = List.from(widget.categories);
-    _calculateCategoryTotals();
-  }
-
-  void _calculateCategoryTotals() {
-    categoryTotals = {};
-    for (var transaction in widget.recentTransactions) {
-      if (transaction['type'] == 'expense') {
-        String category = transaction['category'] ?? 'Uncategorized';
-        if (categoryTotals.containsKey(category)) {
-          categoryTotals[category] = categoryTotals[category]! + transaction['amount'];
-        } else {
-          categoryTotals[category] = transaction['amount'];
-        }
-      }
-    }
   }
 
   void _addCategory() {
@@ -90,34 +73,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 },
               ),
             ),
-            SizedBox(height: 20),
-            Text(
-              'Expenses by Category',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: categoryTotals.isEmpty
-                  ? Center(child: Text('No expenses to show'))
-                  : PieChart(
-                PieChartData(
-                  sections: categoryTotals.entries.map((entry) {
-                    return PieChartSectionData(
-                      color: Colors.primaries[categories.indexOf(entry.key) % Colors.primaries.length],
-                      value: entry.value,
-                      title: '${entry.key}: \$${entry.value.toStringAsFixed(2)}',
-                      radius: 50,
-                      titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 }
+
 
 
