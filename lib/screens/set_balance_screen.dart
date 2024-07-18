@@ -1,4 +1,3 @@
-// set_balance_screen.dart
 import 'package:flutter/material.dart';
 
 class SetBalanceScreen extends StatefulWidget {
@@ -12,7 +11,14 @@ class SetBalanceScreen extends StatefulWidget {
 
 class _SetBalanceScreenState extends State<SetBalanceScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _balanceController = TextEditingController();
+  final _balanceController = TextEditingController();
+
+  void _submitData() {
+    if (_formKey.currentState!.validate()) {
+      widget.onSetBalance(double.parse(_balanceController.text));
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +26,12 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
       appBar: AppBar(
         title: Text('Set Initial Balance'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 controller: _balanceController,
@@ -34,18 +41,15 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a balance';
                   }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
                   return null;
                 },
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    double balance = double.tryParse(_balanceController.text) ?? 0.0;
-                    widget.onSetBalance(balance);
-                    Navigator.of(context).pop();
-                  }
-                },
+                onPressed: _submitData,
                 child: Text('Set Balance'),
               ),
             ],
@@ -55,4 +59,5 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
     );
   }
 }
+
 

@@ -1,8 +1,7 @@
-// add_transaction_screen.dart
 import 'package:flutter/material.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  final Function(String, double, String, String) onAddTransaction;
+  final Function(String title, double amount, String type, String category) onAddTransaction;
   final List<String> categories;
 
   AddTransactionScreen({required this.onAddTransaction, required this.categories});
@@ -13,15 +12,29 @@ class AddTransactionScreen extends StatefulWidget {
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
-  String _type = 'income';
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  String _selectedType = 'expense';
   String _selectedCategory = '';
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.categories.isNotEmpty ? widget.categories[0] : '';
+    if (widget.categories.isNotEmpty) {
+      _selectedCategory = widget.categories.first;
+    }
+  }
+
+  void _submitData() {
+    if (_formKey.currentState!.validate()) {
+      widget.onAddTransaction(
+        _titleController.text,
+        double.parse(_amountController.text),
+        _selectedType,
+        _selectedType == 'expense' ? _selectedCategory : '',
+      );
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -30,11 +43,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       appBar: AppBar(
         title: Text('Add Transaction'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 controller: _titleController,
@@ -54,44 +68,48 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an amount';
                   }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
                   return null;
                 },
               ),
+              SizedBox(height: 10),
               DropdownButtonFormField<String>(
-                value: _type,
-                decoration: InputDecoration(labelText: 'Type'),
+                value: _selectedType,
                 items: [
                   DropdownMenuItem(value: 'income', child: Text('Income')),
                   DropdownMenuItem(value: 'expense', child: Text('Expense')),
                 ],
                 onChanged: (value) {
                   setState(() {
-                    _type = value!;
+                    _selectedType = value!;
                   });
                 },
+                decoration: InputDecoration(labelText: 'Type'),
               ),
-              if (_type == 'expense')
-                DropdownButtonFormField<String>(
+              SizedBox(height: 10),
+              Visibility(
+                visible: _selectedType == 'expense',
+                child: DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  decoration: InputDecoration(labelText: 'Category'),
-                  items: widget.categories.map((String category) {
-                    return DropdownMenuItem(value: category, child: Text(category));
-                  }).toList(),
+                  items: widget.categories
+                      .map((category) => DropdownMenuItem(
+                    value: category,
+                    child: Text(category),
+                  ))
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategory = value!;
                     });
                   },
+                  decoration: InputDecoration(labelText: 'Category'),
                 ),
+              ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    double amount = double.tryParse(_amountController.text) ?? 0.0;
-                    widget.onAddTransaction(_titleController.text, amount, _type, _selectedCategory);
-                    Navigator.of(context).pop();
-                  }
-                },
+                onPressed: _submitData,
                 child: Text('Add Transaction'),
               ),
             ],
@@ -101,5 +119,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 }
+
+
 
 

@@ -1,4 +1,3 @@
-// category_screen.dart
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -6,79 +5,90 @@ class CategoryScreen extends StatefulWidget {
   final Function(List<String>) onUpdateCategories;
   final List<Map<String, dynamic>> recentTransactions;
 
-  CategoryScreen({required this.categories, required this.onUpdateCategories, required this.recentTransactions});
+  CategoryScreen({
+    required this.categories,
+    required this.onUpdateCategories,
+    required this.recentTransactions,
+  });
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  final TextEditingController _categoryController = TextEditingController();
-  late List<String> categories;
-
-  @override
-  void initState() {
-    super.initState();
-    categories = List.from(widget.categories);
-  }
+  final _formKey = GlobalKey<FormState>();
+  final _categoryController = TextEditingController();
 
   void _addCategory() {
-    if (_categoryController.text.isNotEmpty) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
-        categories.add(_categoryController.text);
+        widget.categories.add(_categoryController.text);
+        widget.onUpdateCategories(widget.categories);
         _categoryController.clear();
       });
-      widget.onUpdateCategories(categories);
     }
   }
 
   void _removeCategory(String category) {
     setState(() {
-      categories.remove(category);
+      widget.categories.remove(category);
+      widget.onUpdateCategories(widget.categories);
     });
-    widget.onUpdateCategories(categories);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Categories'),
+        title: Text('Categories'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _categoryController,
-              decoration: InputDecoration(labelText: 'New Category'),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _addCategory,
-              child: Text('Add Category'),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(categories[index]),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _removeCategory(categories[index]),
-                    ),
-                  );
-                },
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _categoryController,
+                    decoration: InputDecoration(labelText: 'New Category'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a category';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _addCategory,
+                    child: Text('Add Category'),
+                  ),
+                ],
               ),
             ),
+            SizedBox(height: 20),
+            Text(
+              'Categories',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            ...widget.categories.map((category) => ListTile(
+              title: Text(category),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _removeCategory(category),
+              ),
+            )),
           ],
         ),
       ),
     );
   }
 }
+
+
 
 
 
