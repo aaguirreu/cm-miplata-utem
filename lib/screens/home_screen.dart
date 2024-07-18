@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppBar(
                     backgroundColor: Color(0xFFefbdeb),
                     elevation: 0,
-                    title: Text('Home Screen'),
+                    title: Text('App Mi Plata UTEM'),
                     actions: [
                       IconButton(
                         icon: Icon(Icons.logout),
