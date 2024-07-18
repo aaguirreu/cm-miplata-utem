@@ -13,6 +13,7 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
   final _formKey = GlobalKey<FormState>();
   final _balanceController = TextEditingController();
 
+  // Método para manejar el envío de datos
   void _submitData() {
     if (_formKey.currentState!.validate()) {
       widget.onSetBalance(double.parse(_balanceController.text));
@@ -58,6 +59,10 @@ class _SetBalanceScreenState extends State<SetBalanceScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _balanceController.dispose();
+    super.dispose();
+  }
 }
-
-
