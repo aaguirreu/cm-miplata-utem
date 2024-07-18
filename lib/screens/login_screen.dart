@@ -1,98 +1,54 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ],
-  );
-
-  GoogleSignInAccount? _currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
-        if (_currentUser != null) {
-          _navigateToHomeScreen();
-        }
-      });
-    });
-    _googleSignIn.signInSilently();
-  }
-
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  Future<void> _handleSignOut() async {
-    await _googleSignIn.disconnect();
-  }
-
-  void _navigateToHomeScreen() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(),
-      ),
-    );
-  }
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount? user = _currentUser;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Google Sign-In Example'),
-        actions: <Widget>[
-          user != null
-              ? IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: _handleSignOut,
-          )
-              : Container()
-        ],
-      ),
       body: Center(
-        child: user != null
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ListTile(
-              leading: GoogleUserCircleAvatar(
-                identity: user,
-              ),
-              title: Text(user.displayName ?? ''),
-              subtitle: Text(user.email),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _handleSignOut,
-              child: Text('SIGN OUT'),
-            ),
-          ],
-        )
-            : ElevatedButton(
-          onPressed: _handleSignIn,
-          child: Text('SIGN IN WITH GOOGLE'),
+        child: ElevatedButton(
+          onPressed: () {
+            signInWithGoogle(context);
+          },
+          child: Text('Login with Google'),
         ),
       ),
     );
   }
+
+  signInWithGoogle(BuildContext context) async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    await googleSignIn.signOut();
+
+    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+    if (googleUser == null) {
+      return;
+    }
+
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    print(userCredential.user?.displayName);
+
+    if (userCredential.user != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
+  }
 }
+
+
 
 
