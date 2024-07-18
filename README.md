@@ -1,5 +1,5 @@
 # cm-miplata-utem
-Proyecto de Computación Movil. Trackea tus transacciones y pagos para organizar tu plata.
+Proyecto de Computación Movil. Gestion de finanzas del usuario.
 
 
 # Instalación
