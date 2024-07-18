@@ -33,6 +33,7 @@ En la pantalla de categorías el usuario puede añadir categorías para las tran
 
 # En construcción
 - Se creó una API de transacciones para los correos. está pendiente la conexión entre la API y el proyecto.
+- Link de la API: https://github.com/aaguirreu/api-compu-movil 
 - Pendiente levantar proyecto a la nube e implementar la base de datos
 
 # Créditos
