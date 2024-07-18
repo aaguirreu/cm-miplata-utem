@@ -4,7 +4,8 @@ import 'package:logger/logger.dart';
 import '../models/user.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.90:8000/api/v1';
+  // Url base de la API de Transferencias (cambiar ip)
+  static const String baseUrl = 'http://localhost:8000/api/v1';
   final Dio _dio = Dio();
   static final Logger _logger = Logger();
 
