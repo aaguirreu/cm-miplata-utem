@@ -31,10 +31,14 @@ Cuando haya más de 4 transacciones en el sistema, aparecerá un botón para pod
 
 En la pantalla de categorías el usuario puede añadir categorías para las transacciones de tipo "gasto", además de ver las categorías existentes y eliminarlas.
 
+# En construcción
+- Se creó una API de transacciones para los correos. está pendiente la conexión entre la API y el proyecto.
+- Pendiente levantar proyecto a la nube e implementar la base de datos
+
 # Créditos
 
 Integrantes: 
-- Guillermo.
+- Guillermo Espinosa.
 - Álvaro Aguirre.
 - Samuel Tapia.
 
